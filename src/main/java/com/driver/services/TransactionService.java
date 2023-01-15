@@ -37,7 +37,7 @@ public class TransactionService {
 
     public String issueBook(int cardId, int bookId) throws Exception {
         
-        try{
+         try{
         //check whether bookId and cardId already exist
         //conditions required for successful transaction of issue book:
         //1. book is present and available
@@ -56,22 +56,23 @@ public class TransactionService {
         }*/
         // If it fails: throw new Exception("Book limit has reached for this card");
         Transaction t1 = new Transaction();
-
-        Card card = cardRepository5.findById(cardId).get();
-        Book book = bookRepository5.findById(bookId).get();
-        t1.setBook(book);
-        t1.setCard(card);
             
-         if(book==null || book.isAvailable()==false){
+         if(!bookRepository5.findById(bookId).isPresent() || !bookRepository5.findById(bookId).get().isAvailable()){
             t1.setTransactionStatus(TransactionStatus.FAILED);
             transactionRepository5.save(t1);
             throw new Exception("Book is either unavailable or not present");
         }
-        if(card==null || card.getCardStatus().equals(CardStatus.DEACTIVATED)){
+        if(!cardRepository5.findById(cardId).isPresent() || cardRepository5.findById(cardId).get().getCardStatus().equals(CardStatus.DEACTIVATED)){
             t1.setTransactionStatus(TransactionStatus.FAILED);
             transactionRepository5.save(t1);
             throw new Exception("Card is invalid");
         }
+
+            Card card = cardRepository5.findById(cardId).get();
+            Book book = bookRepository5.findById(bookId).get();
+            t1.setBook(book);
+            t1.setCard(card);
+
         if(card.getBooks().size()>=max_allowed_books){
             t1.setTransactionStatus(TransactionStatus.FAILED);
             transactionRepository5.save(t1);
@@ -90,9 +91,7 @@ public class TransactionService {
         BookList.add(book);
         card.setBooks(BookList);
         book.setAvailable(false);
-        System.out.println(1234);
         book.setCard(card);
-        System.out.println(1234);
 
         List<Transaction> BooktransactionList = book.getTransactions();
         BooktransactionList.add(t1);
@@ -127,25 +126,31 @@ public class TransactionService {
         try{
 
         List<Transaction> transactions = transactionRepository5.find(cardId, bookId, TransactionStatus.SUCCESSFUL, true);
+        if(transactions.size()==0) throw new Exception();
         Transaction transaction = transactions.get(transactions.size() - 1);
-
-        LocalDateTime ltd = LocalDateTime.now();
-        Date date = Timestamp.valueOf(ltd);
-        long difference_In_Time
-                = transaction.getTransactionDate().getTime() - date.getTime();
-        long difference_In_Days
-                = (difference_In_Time
-                / (1000 * 60 * 60 * 24))
-                % 365;
-        int  extraDays = (int)difference_In_Days-getMax_allowed_days;
-
-        if(extraDays>0) transaction.setFineAmount(fine_per_day * extraDays);
 
         //for the given transaction calculate the fine amount considering the book has been returned exactly when this function is called
         //make the book available for other users
         //make a new transaction for return book which contains the fine amount as well
 
         Transaction returnBookTransaction  = new Transaction();
+        transactionRepository5.save(returnBookTransaction);
+
+        List<Transaction> transactionList = transactionRepository5.findAll();
+        returnBookTransaction = transactionList.get(transactionList.size()-1);
+
+        Date currentDate = returnBookTransaction.getTransactionDate();
+        Date transactionDate = transaction.getTransactionDate();
+
+            long difference_In_Time
+                    = currentDate.getTime() - transactionDate.getTime();
+
+            long difference_In_Days
+                    = (difference_In_Time
+                    / (1000 * 60 * 60 * 24))
+                    % 365;
+
+            int extraDays = (int) difference_In_Days-getMax_allowed_days;
 
         if(extraDays>0)returnBookTransaction.setFineAmount(fine_per_day*extraDays);
         else returnBookTransaction.setFineAmount(0);
@@ -173,18 +178,12 @@ public class TransactionService {
         BooktransactionList.add(returnBookTransaction);
         book.setTransactions(BooktransactionList);
 
-        transactionRepository5.save(returnBookTransaction);
         cardRepository5.save(card);
 
-        card = cardRepository5.findById(cardId).get();
-        CardtransactionList = card.getTransactions();
-
-        int size = CardtransactionList.size();
-
-        return CardtransactionList.get(size-1); //return the transaction after updating all details
+        return returnBookTransaction; //return the transaction after updating all details
             
         }
-        catch(Exception e){
+        catch (Exception e){
             throw e;
         }
     }
