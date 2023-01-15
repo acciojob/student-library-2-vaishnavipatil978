@@ -22,21 +22,8 @@ public class BookService {
     private AuthorRepository authorRepository2;
 
     public void createBook(Book book){
-          try{   
-        if(book.getAuthor()!=null) {
-            Author author = book.getAuthor();
-            author = authorRepository2.findById(author.getId()).get();
-            List<Book> bookList = author.getBooksWritten();
-            if(bookList==null) bookList=new ArrayList<>();
-            bookList.add(book);
-            author.setBooksWritten(bookList);
-
-            authorRepository2.save(author);
-            return;
-        }
+   
         bookRepository2.save(book);
-          }
-        catch(Exception e){}
     }
 
     public List<Book> getBooks(String genre, boolean available, String author){
@@ -45,7 +32,7 @@ public class BookService {
 
         try{
 
-            if(author.length()>0){
+           /* if(author.length()>0){
                 books = bookRepository2.findBooksByAuthor(author,available);
             }
             else{
@@ -67,7 +54,18 @@ public class BookService {
                 return ans;
             }
 
-            return books;
+            return books;*/
+             if(genre != null && author != null){
+            books = bookRepository2.findBooksByGenreAuthor(genre, author, available);
+        }else if(genre != null){
+            books = bookRepository2.findBooksByGenre(genre, available);
+        }else if(author != null){
+            books = bookRepository2.findBooksByAuthor(author, available);
+        }else{
+            books = bookRepository2.findByAvailability(available);
+        }
+        return books;
+            
         }
         catch (Exception e){
             //System.out.println(e.getMessage());
