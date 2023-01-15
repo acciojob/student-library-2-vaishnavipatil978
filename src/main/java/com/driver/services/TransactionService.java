@@ -36,8 +36,7 @@ public class TransactionService {
     public int fine_per_day;
 
     public String issueBook(int cardId, int bookId) throws Exception {
-        
-         try{
+
 
              Transaction t1 = new Transaction();
             
@@ -98,19 +97,12 @@ public class TransactionService {
         //Note that the error message should match exactly in all cases
 
         //return transactionId instead
-            
-        }
-        catch(Exception e){
-            throw e;
-        }
+
     }
 
     public Transaction returnBook(int cardId, int bookId) throws Exception{
-        
-        try{
 
         List<Transaction> transactions = transactionRepository5.find(cardId, bookId, TransactionStatus.SUCCESSFUL, true);
-        if(transactions.size()==0) throw new Exception();
         Transaction transaction = transactions.get(transactions.size() - 1);
 
         //for the given transaction calculate the fine amount considering the book has been returned exactly when this function is called
@@ -165,10 +157,6 @@ public class TransactionService {
         cardRepository5.save(card);
 
         return returnBookTransaction; //return the transaction after updating all details
-            
-        }
-        catch (Exception e){
-            throw e;
-        }
+
     }
 }
