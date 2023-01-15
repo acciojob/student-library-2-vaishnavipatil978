@@ -29,16 +29,16 @@ public class StudentController {
     @GetMapping("studentByEmail")
     public ResponseEntity getStudentByEmail(@RequestParam("email") String email){
         Student student = studentService.getDetailsByEmail(email);
-        return new ResponseEntity<>(student+"Student details printed successfully ", HttpStatus.OK);
+        return new ResponseEntity<>(student, HttpStatus.OK);
     }
 
     @GetMapping("studentById")
     public ResponseEntity getStudentById(@RequestParam("id") int id){
         Student student = studentService.getDetailsById(id);
-        return new ResponseEntity<>(student+"Student details printed successfully ", HttpStatus.OK);
+        return new ResponseEntity<>(student, HttpStatus.OK);
     }
 
-    @PostMapping("createStudent")
+    @PostMapping("/")
     public ResponseEntity createStudent(@RequestBody() Student student){
         try{
             studentService.createStudent(student);
@@ -50,13 +50,13 @@ public class StudentController {
 
     }
 
-    @PutMapping("updateStudent")
+    @PutMapping("/")
     public ResponseEntity updateStudent(@RequestBody() Student student){
         studentService.updateStudent(student);
         return new ResponseEntity<>("student is updated", HttpStatus.ACCEPTED);
     }
 
-    @DeleteMapping("deleteStudent")
+    @DeleteMapping("/")
     public ResponseEntity deleteStudent(@RequestParam("id") int id){
         studentService.deleteStudent(id);
         return new ResponseEntity<>("student is deleted", HttpStatus.ACCEPTED);
