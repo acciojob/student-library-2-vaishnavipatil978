@@ -14,17 +14,10 @@ public class AuthorService {
     AuthorRepository authorRepository1;
 
     public void create(Author author){
+        try{
         authorRepository1.save(author);
-    }
-
-    public List<Author> getByName(String name){
-        List<Author> ans = new ArrayList<>();
-        List<Author> allAuthors = authorRepository1.findAll();
-
-        for(Author a : allAuthors){
-            if(a.getName().equals(name)) ans.add(a);
         }
-
-        return ans;
+        catch(Exception e){}
     }
+
 }
