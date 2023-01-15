@@ -8,7 +8,6 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table
 public class Student {
 
     @Id
@@ -117,5 +116,9 @@ public class Student {
         this.name = name;
         this.age = age;
         this.country = country;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

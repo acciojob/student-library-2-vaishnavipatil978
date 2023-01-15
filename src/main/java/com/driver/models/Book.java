@@ -7,7 +7,6 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table
 public class Book {
 
     @Id
@@ -74,6 +73,7 @@ public class Book {
         this.name = name;
         this.genre = genre;
         this.author = author;
+        this.available=true;
     }
 
     public int getId() {

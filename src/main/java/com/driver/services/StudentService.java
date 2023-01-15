@@ -41,7 +41,7 @@ public class StudentService {
 
     }
 
-    public void createStudent(Student student) throws Exception{
+    public void createStudent(Student student){
 
         try{
             Card card = cardService4.createAndReturn(student);
@@ -49,7 +49,7 @@ public class StudentService {
 //            cardRepository.findById(card.getId()).get().setStudent(studentRepository.findByEmailId(student.getEmailId()));
         }
         catch (Exception e){
-            throw e;
+
         }
 
     }

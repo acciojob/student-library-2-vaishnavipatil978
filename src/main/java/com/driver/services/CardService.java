@@ -38,7 +38,6 @@ public class CardService {
         
         try{
             cardRepository3.deactivateCard(student_id, CardStatus.DEACTIVATED.toString());
-            System.out.println("delete");
         }
         catch(Exception e){
             

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
 
-@Repository
+
 public interface CardRepository extends JpaRepository<Card, Integer> {
 
     @Modifying

@@ -7,7 +7,6 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table
 public class Author {
 
     @Id
@@ -28,15 +27,19 @@ public class Author {
     public Author() {
     }
 
-    public int getId() {
-        return id;
-    }
-
     public Author(String name, String email, int age, String country) {
         this.name = name;
         this.email = email;
         this.age = age;
         this.country = country;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {

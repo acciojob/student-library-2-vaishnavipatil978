@@ -1,15 +1,12 @@
 package com.driver.services;
 
-import com.driver.BookRequestDto;
 import com.driver.models.Author;
 import com.driver.models.Book;
-import com.driver.models.Genre;
 import com.driver.repositories.AuthorRepository;
 import com.driver.repositories.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -24,7 +21,18 @@ public class BookService {
     public void createBook(Book book){
         
         try{
-            bookRepository2.save(book);
+            if(book==null) return;
+
+            if(book.getAuthor()!=null){
+                int authorId = book.getAuthor().getId();
+                Author author = authorRepository2.findById(authorId).get();
+
+                author.getBooksWritten().add(book);
+                book.setAuthor(author);
+
+                authorRepository2.save(author);
+            }
+            else bookRepository2.save(book);
         }
         catch(Exception e){
             
@@ -33,8 +41,7 @@ public class BookService {
     }
 
     public List<Book> getBooks(String genre, boolean available, String author){
-        List<Book> books ; //find the elements of the list by yourself
-        //System.out.println(genre+""+available+""+author);
+        List<Book> books = null;
 
         try{
 
