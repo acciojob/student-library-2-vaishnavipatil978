@@ -48,12 +48,12 @@ public class TransactionService {
         t1.setCard(card);
         t1.setIssueOperation(true);
             
-         if(!bookRepository5.findById(bookId).isPresent() || !bookRepository5.findById(bookId).get().isAvailable()){
+         if(book==null || !bookRepository5.findById(bookId).isPresent() || !bookRepository5.findById(bookId).get().isAvailable()){
             t1.setTransactionStatus(TransactionStatus.FAILED);
             transactionRepository5.save(t1);
             throw new Exception("Book is either unavailable or not present");
         }
-        if(!cardRepository5.findById(cardId).isPresent() || cardRepository5.findById(cardId).get().getCardStatus().equals(CardStatus.DEACTIVATED)){
+        if(card==null || !cardRepository5.findById(cardId).isPresent() || cardRepository5.findById(cardId).get().getCardStatus().equals(CardStatus.DEACTIVATED)){
             t1.setTransactionStatus(TransactionStatus.FAILED);
             transactionRepository5.save(t1);
             throw new Exception("Card is invalid");
@@ -74,11 +74,7 @@ public class TransactionService {
         book.setAvailable(false);
         book.setCard(card);
 
-        List<Transaction> BooktransactionList = book.getTransactions();
-        BooktransactionList.add(t1);
-        book.setTransactions(BooktransactionList);
-
-        cardRepository5.save(card);
+        bookRepository5.updateBook(book);
         transactionRepository5.save(t1);
 
         return t1.getTransactionId();
@@ -103,10 +99,15 @@ public class TransactionService {
             fine=(int)(extraDays-getMax_allowed_days)*fine_per_day;
         }
 
-        Transaction returnBookTransaction  = new Transaction();
-
-        Card card = cardRepository5.findById(cardId).get();
         Book book = bookRepository5.findById(bookId).get();
+        book.setAvailable(true);
+        book.setCard(null);
+
+        bookRepository5.updateBook(book);
+
+        Card card = transaction.getCard();
+
+        Transaction returnBookTransaction  = new Transaction();
 
         returnBookTransaction.setIssueOperation(false);
         returnBookTransaction.setTransactionStatus(TransactionStatus.SUCCESSFUL);
@@ -115,17 +116,11 @@ public class TransactionService {
         returnBookTransaction.setBook(book);
         returnBookTransaction.setFineAmount(fine);
 
-        book.setAvailable(true);
-        book.setCard(null);
         List<Book> bookList = card.getBooks();
         bookList.remove(book);
         card.setBooks(bookList);
 
-        List<Transaction> BooktransactionList = book.getTransactions();
-        BooktransactionList.add(returnBookTransaction);
-        book.setTransactions(BooktransactionList);
-
-        cardRepository5.save(card);
+        transactionRepository5.save(returnBookTransaction);
 
         return returnBookTransaction; //return the transaction after updating all details
 
