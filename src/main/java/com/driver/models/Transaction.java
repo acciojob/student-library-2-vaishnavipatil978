@@ -38,6 +38,31 @@ public class Transaction {
     @CreationTimestamp
     private Date transactionDate;
 
+     public Transaction(int fineAmount, boolean isIssueOperation, TransactionStatus transactionStatus, Date transactionDate) {
+        this.fineAmount = fineAmount;
+        this.isIssueOperation = isIssueOperation;
+        this.transactionStatus = transactionStatus;
+        this.transactionDate = transactionDate;
+    }
+
+    public Transaction(Card card, Book book, int fineAmount, boolean isIssueOperation, TransactionStatus transactionStatus, Date transactionDate) {
+        this.card = card;
+        this.book = book;
+        this.fineAmount = fineAmount;
+        this.isIssueOperation = isIssueOperation;
+        this.transactionStatus = transactionStatus;
+        this.transactionDate = transactionDate;
+    }
+
+    public Transaction(int fineAmount, boolean isIssueOperation, TransactionStatus transactionStatus) {
+        this.fineAmount = fineAmount;
+        this.isIssueOperation = isIssueOperation;
+        this.transactionStatus = transactionStatus;
+    }
+
+    public Transaction() {
+    }
+
     public int getId() {
         return id;
     }
@@ -48,6 +73,10 @@ public class Transaction {
 
     public String getTransactionId() {
         return transactionId;
+    }
+
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
     }
 
     public Card getCard() {
@@ -90,17 +119,12 @@ public class Transaction {
         this.transactionStatus = transactionStatus;
     }
 
-    public Transaction(int fineAmount, boolean isIssueOperation, TransactionStatus transactionStatus) {
-        this.fineAmount = fineAmount;
-        this.isIssueOperation = isIssueOperation;
-        this.transactionStatus = transactionStatus;
-    }
-
     public Date getTransactionDate() {
         return transactionDate;
     }
 
-    public Transaction() {
+    public void setTransactionDate(Date transactionDate) {
+        this.transactionDate = transactionDate;
     }
 }
 
