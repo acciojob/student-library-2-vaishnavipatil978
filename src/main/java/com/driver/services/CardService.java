@@ -17,21 +17,32 @@ public class CardService {
     @Autowired
     CardRepository cardRepository3;
 
-    public Card createAndReturn(Student student){
+     public Card createAndReturn(Student student){
+        
+        try{
+            Card newCard = new Card();
 
-        Card newCard = new Card();
+            student.setCard(newCard);
+            newCard.setStudent(student);
 
-        student.setCard(newCard);
-        newCard.setStudent(student);
-
-        cardRepository3.save(newCard);
-        return newCard;
+            cardRepository3.save(newCard);
+            return newCard;
+        }
+        catch(Exception e){
+            return null;
+        }
 
     }
 
     public void deactivateCard(int student_id){
-
-        cardRepository3.deactivateCard(student_id, CardStatus.DEACTIVATED.toString());
-        System.out.println("delete");
+        
+        try{
+            cardRepository3.deactivateCard(student_id, CardStatus.DEACTIVATED.toString());
+            System.out.println("delete");
+        }
+        catch(Exception e){
+            
+        }
+        
     }
 }
