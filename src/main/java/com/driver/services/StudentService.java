@@ -20,11 +20,25 @@ public class StudentService {
 
 
     public Student getDetailsByEmail(String email){
-        return studentRepository4.findByEmailId(email);
+
+        try{
+            return studentRepository4.findByEmailId(email);
+        }
+        catch (Exception e){
+            return null;
+        }
+
     }
 
     public Student getDetailsById(int id){
-       return studentRepository4.findById(id).get();
+
+        try{
+            return studentRepository4.findById(id).get();
+        }
+        catch(Exception e){
+            return null;
+        }
+
     }
 
     public void createStudent(Student student) throws Exception{
@@ -41,13 +55,23 @@ public class StudentService {
     }
 
     public void updateStudent(Student student){
-        studentRepository4.updateStudentDetails(student);
+        try{
+            studentRepository4.updateStudentDetails(student);
+        }
+        catch (Exception e){
+
+        }
     }
 
     public void deleteStudent(int id){
-        cardService4.deactivateCard(id);
-        studentRepository4.deleteCustom(id);
+        try{
+            cardService4.deactivateCard(id);
+            studentRepository4.deleteCustom(id);
+        }
+        catch (Exception e){}
+
         //Delete student and deactivate corresponding card
     }
+
 
 }
