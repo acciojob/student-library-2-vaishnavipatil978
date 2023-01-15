@@ -22,12 +22,18 @@ public class BookService {
     private AuthorRepository authorRepository2;
 
     public void createBook(Book book){
+        
+        try{
+            bookRepository2.save(book);
+        }
+        catch(Exception e){
+            
+        }
    
-        bookRepository2.save(book);
     }
 
     public List<Book> getBooks(String genre, boolean available, String author){
-        List<Book> books = new ArrayList<>(); //find the elements of the list by yourself
+        List<Book> books ; //find the elements of the list by yourself
         //System.out.println(genre+""+available+""+author);
 
         try{
