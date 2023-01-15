@@ -36,6 +36,8 @@ public class TransactionService {
     public int fine_per_day;
 
     public String issueBook(int cardId, int bookId) throws Exception {
+        
+        try{
         //check whether bookId and cardId already exist
         //conditions required for successful transaction of issue book:
         //1. book is present and available
@@ -95,9 +97,16 @@ public class TransactionService {
         //Note that the error message should match exactly in all cases
 
         //return transactionId instead
+            
+        }
+        catch(Exception e){
+            throw e;
+        }
     }
 
     public Transaction returnBook(int cardId, int bookId) throws Exception{
+        
+        try{
 
         List<Transaction> transactions = transactionRepository5.find(cardId, bookId, TransactionStatus.SUCCESSFUL, true);
         Transaction transaction = transactions.get(transactions.size() - 1);
@@ -155,5 +164,10 @@ public class TransactionService {
         int size = CardtransactionList.size();
 
         return CardtransactionList.get(size-1); //return the transaction after updating all details
+            
+        }
+        catch(Exception e){
+            throw e;
+        }
     }
 }
