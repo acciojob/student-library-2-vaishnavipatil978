@@ -15,16 +15,10 @@ public class AuthorController {
     @Autowired
     AuthorService authorService;
 
-    @PostMapping("createAuthor")
+    @PostMapping("/")
     public ResponseEntity createAuthor(@RequestBody()Author author){
         authorService.create(author);
         return new ResponseEntity<>("Author added successfully!", HttpStatus.CREATED);
-    }
-
-    @GetMapping("getByName")
-    public ResponseEntity<List<Author>> getByName(@RequestParam("authorName") String name){
-        List<Author> res = authorService.getByName(name);
-        return new ResponseEntity<>(res,HttpStatus.OK);
     }
 
 }
