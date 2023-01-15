@@ -13,6 +13,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.time.*;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class TransactionService {
@@ -38,7 +39,14 @@ public class TransactionService {
     public String issueBook(int cardId, int bookId) throws Exception {
 
 
-             Transaction t1 = new Transaction();
+        Transaction t1 = new Transaction();
+
+        Card card = cardRepository5.findById(cardId).get();
+        Book book = bookRepository5.findById(bookId).get();
+
+        t1.setBook(book);
+        t1.setCard(card);
+        t1.setIssueOperation(true);
             
          if(!bookRepository5.findById(bookId).isPresent() || !bookRepository5.findById(bookId).get().isAvailable()){
             t1.setTransactionStatus(TransactionStatus.FAILED);
@@ -51,11 +59,6 @@ public class TransactionService {
             throw new Exception("Card is invalid");
         }
 
-            Card card = cardRepository5.findById(cardId).get();
-            Book book = bookRepository5.findById(bookId).get();
-            t1.setBook(book);
-            t1.setCard(card);
-
         if(card.getBooks().size()>=max_allowed_books){
             t1.setTransactionStatus(TransactionStatus.FAILED);
             transactionRepository5.save(t1);
@@ -64,11 +67,6 @@ public class TransactionService {
         
             
         t1.setTransactionStatus(TransactionStatus.SUCCESSFUL);
-        t1.setIssueOperation(true);
-
-        List<Transaction> CardtransactionList = card.getTransactions();
-        CardtransactionList.add(t1);
-        card.setTransactions(CardtransactionList);
 
         List<Book> BookList = card.getBooks();
         BookList.add(book);
@@ -81,18 +79,9 @@ public class TransactionService {
         book.setTransactions(BooktransactionList);
 
         cardRepository5.save(card);
+        transactionRepository5.save(t1);
 
-        card = cardRepository5.findById(cardId).get();
-        CardtransactionList = card.getTransactions();
-
-        String transactionId = null;
-
-
-        for(Transaction t : CardtransactionList){
-            if(t.getCard().getId()==cardId) transactionId=t.getTransactionId();
-        }
-
-        return transactionId;
+        return t1.getTransactionId();
         //If the transaction is successful, save the transaction to the list of transactions and return the id
         //Note that the error message should match exactly in all cases
 
@@ -105,31 +94,16 @@ public class TransactionService {
         List<Transaction> transactions = transactionRepository5.find(cardId, bookId, TransactionStatus.SUCCESSFUL, true);
         Transaction transaction = transactions.get(transactions.size() - 1);
 
-        //for the given transaction calculate the fine amount considering the book has been returned exactly when this function is called
-        //make the book available for other users
-        //make a new transaction for return book which contains the fine amount as well
+        Date issueDate = transaction.getTransactionDate();
+        long time = Math.abs(System.currentTimeMillis()-issueDate.getTime());
+        long extraDays = TimeUnit.DAYS.convert(time,TimeUnit.MILLISECONDS);
+
+        int fine = 0;
+        if(extraDays>getMax_allowed_days){
+            fine=(int)(extraDays-getMax_allowed_days)*fine_per_day;
+        }
 
         Transaction returnBookTransaction  = new Transaction();
-        transactionRepository5.save(returnBookTransaction);
-
-        List<Transaction> transactionList = transactionRepository5.findAll();
-        returnBookTransaction = transactionList.get(transactionList.size()-1);
-
-        Date currentDate = returnBookTransaction.getTransactionDate();
-        Date transactionDate = transaction.getTransactionDate();
-
-            long difference_In_Time
-                    = currentDate.getTime() - transactionDate.getTime();
-
-            long difference_In_Days
-                    = (difference_In_Time
-                    / (1000 * 60 * 60 * 24))
-                    % 365;
-
-            int extraDays = (int) difference_In_Days-getMax_allowed_days;
-
-        if(extraDays>0)returnBookTransaction.setFineAmount(fine_per_day*extraDays);
-        else returnBookTransaction.setFineAmount(0);
 
         Card card = cardRepository5.findById(cardId).get();
         Book book = bookRepository5.findById(bookId).get();
@@ -139,16 +113,13 @@ public class TransactionService {
 
         returnBookTransaction.setCard(card);
         returnBookTransaction.setBook(book);
+        returnBookTransaction.setFineAmount(fine);
 
         book.setAvailable(true);
         book.setCard(null);
         List<Book> bookList = card.getBooks();
         bookList.remove(book);
         card.setBooks(bookList);
-
-        List<Transaction> CardtransactionList = card.getTransactions();
-        CardtransactionList.add(returnBookTransaction);
-        card.setTransactions(CardtransactionList);
 
         List<Transaction> BooktransactionList = book.getTransactions();
         BooktransactionList.add(returnBookTransaction);

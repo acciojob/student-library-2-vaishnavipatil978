@@ -33,10 +33,6 @@ public class Card {
     @JsonIgnoreProperties("card")
     private List<Book> books;
 
-    @OneToMany(mappedBy = "card", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties("card")
-    private List<Transaction> transactions;
-
     public Card(){
         this.cardStatus = CardStatus.ACTIVATED;
     }
@@ -80,14 +76,6 @@ public class Card {
 
     public void setBooks(List<Book> books) {
         this.books = books;
-    }
-
-    public List<Transaction> getTransactions() {
-        return transactions;
-    }
-
-    public void setTransactions(List<Transaction> transactions) {
-        this.transactions = transactions;
     }
 
     public void setId(int id) {
