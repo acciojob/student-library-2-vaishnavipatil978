@@ -22,7 +22,7 @@ public class BookService {
     private AuthorRepository authorRepository2;
 
     public void createBook(Book book){
-             
+          try{   
         if(book.getAuthor()!=null) {
             Author author = book.getAuthor();
             author = authorRepository2.findById(author.getId()).get();
@@ -35,6 +35,8 @@ public class BookService {
             return;
         }
         bookRepository2.save(book);
+          }
+        catch(Exception e){}
     }
 
     public List<Book> getBooks(String genre, boolean available, String author){
